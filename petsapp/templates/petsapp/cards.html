@@ -1,0 +1,22 @@
+
+<style>
+    a {
+      text-decoration: none;
+    }
+    .card:hover{
+      box-shadow: 2px 2px 5px 3px grey;
+    }
+  </style>  
+<div class="col-lg-3">
+    <div class="card" style="height:350px;cursor: pointer;">
+      <div class="card-body">
+      
+        <a href="{% url 'pets:detail' slug=instance.slug  %}">
+          <img height="200px" class="card-img-top" src="{{ instance.image.url }}" alt="image cap" />
+          <p class="card-text">{{instance.name}}</p>
+          <p class="card-text">{{instance.description}}</p>
+          <p>Price<b>: ${{instance.price}}</b></p>
+        </a>
+      </div>
+    </div>
+  </div>

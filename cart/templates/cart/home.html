@@ -1,0 +1,79 @@
+{% extends 'base/base.html' %}
+{% load static %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+{% if flag %}
+
+<form  action="{% url 'orders:place_order' %}">
+   {% csrf_token %}
+   <table class="table">
+      <thead>
+         <tr>
+            <th scope="col">Pet</th>
+            <th scope="col">Price</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Total Price</th>
+         </tr>
+      </thead>
+      <tbody>
+         {% for item in items %}
+         <tr>
+            <td><img src="{{item.pet.image.url}}" height="150px" width="150px">
+               <br>
+               <h4>{{item.pet.name}}</h4>
+            </td>
+            <td>{{item.pet.price}}</td>
+            <td>
+               <input type="number" min='0' data-price="{{item.pet.price}}"  value="{{item.quantity}}" cartid="{{item.id}}" class="qnt" id='qnt{{item.id}}' />
+            </td>
+            <td>
+               <input type="text" value=" {{ item.totalprice }}" id="totalprice{{item.id}}" class='totalprice' />
+            </td>    
+            <td><a href="{% url 'cart:deleteitem' item.id %}">Delete</a></td>
+         </tr>
+         {% endfor %}
+      
+      </tbody>
+   </table>
+<div class='col-12 col-md-6'>
+   <label>Total Ammount</label>
+   <input type="text" name='totalamount' id='totalamount' value='0.0' />
+   <input type="submit" value="Placeorder">
+</form>
+
+{% else %}
+<h1>Empty cart</h1>
+{% endif %}
+
+
+<!--script src="{% static 'js/updatecart.js' %}"></script-->
+
+
+<script>
+   $(document).ready(function () {
+      $('.qnt').change(function () {
+
+         quantity = $(this).val()
+         price = $(this).parent().prev().html()
+
+         id = $(this).attr('cartid')
+         // $("#totalprice"+id).val(totalprice)
+
+         
+         $.ajax({
+            url: "/cart/updatecart/",
+            method: 'POST',
+            data: { 'qnt': quantity, 'price': price, 'cid': id, 'csrfmiddlewaretoken': '{{csrf_token}}' },
+            success: function (response) {
+               $("#totalprice" + id).val(response.totalprice);
+               $('#totalamount').val(response.totalam);
+            },
+            error: function () { }
+         })
+
+      })
+   })
+</script>
+
+{% endblock %}
